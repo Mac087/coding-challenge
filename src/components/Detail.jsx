@@ -1,68 +1,44 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
-import { ClipLoader } from 'react-spinners';
-
 import '../styles/Detail.css';
-import 'pretty-checkbox/src/pretty-checkbox.scss';
 
-function Detail({ tasks }) {
+function Detail({ group, data, updateTasks, handleComponent }) {
 
-  const temp = { name: 'Task Group 1', tasks: [] };
-  const tasksList = tasks ? tasks : temp;
-
-  const spinner = (
-    <div class="spin">
-      <ClipLoader
-        sizeUnit={"px"}
-        size={150}
-        color={'#1dd1a1'}
-        loading={true}
-      />
+  const locked = ({ task, id }) => (
+    <div className="list-group-item d-flex flex-row text-muted" key={id}>
+      <i className="fas fa-lock fa-lg my-auto mr-5"></i>
+      <p className="my-4 font-weight-bold">{task}</p>
     </div>
   );
 
-  // const list = tasksList.map((e, i) =>
+  const unLocked = ({ task, completedAt, id }, style) => (
+    <div className="list-group-item d-flex flex-row last" key={id}>
+      <div className="pretty p-default mr-5 my-auto">
+        <input type="checkbox" id={id} checked={completedAt} onChange={updateTasks} />
+        <div className="state p-info">
+          <label></label>
+        </div>
+      </div>
+      <p className={style}>{task}</p>
+    </div>
+  );
 
-  // );
+  const list = data
+    .filter(e => e.group === group)
+    .map(e => {
+      const style = e.completedAt ? "my-4 font-weight-bold line" : "my-4 font-weight-bold";
+      return e.isLocked ? locked(e) : unLocked(e, style);
+    });
 
-  const details = (
+  return (
     <div className="container mt-4">
       <div className="d-flex justify-content-between">
-        <h2>{tasksList.name}</h2>
-        <Link to="/" className="my-auto">ALL GROUPS</Link>
+        <h2>{group}</h2>
+        <p className="cursor my-auto text-info" onClick={handleComponent}>ALL GROUPS</p>
       </div>
       <div className="list-group list-group-flush mt-4">
-
-        <div className="list-group-item d-flex flex-row text-muted">
-          <i className="fas fa-lock fa-lg my-auto mr-5"></i>
-          <p className="my-4 font-weight-bold">Task Group 1</p>
-        </div>
-
-        <div className="list-group-item d-flex flex-row last">
-          <div className="pretty p-default mr-5 my-auto">
-            <input type="checkbox" />
-            <div className="state p-info">
-              <label></label>
-            </div>
-          </div>
-          <p className="my-4 font-weight-bold">Task Group 1</p>
-        </div>
-
-        <div className="list-group-item d-flex flex-row last">
-          <div className="pretty p-default mr-5 my-auto">
-            <input type="checkbox" />
-            <div className="state p-info">
-              <label></label>
-            </div>
-          </div>
-          <p className="my-4 font-weight-bold line">Task Group 1</p>
-        </div>
-
+        {list}
       </div>
     </div>
-  );
-  return (
-    tasks ? details : spinner
   );
 }
 

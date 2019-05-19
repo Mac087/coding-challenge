@@ -1,32 +1,13 @@
 function formatData(arr) {
-  const obj = {};
+  const groups = {};
 
-  for (let task of arr) {
-    const { group, id, completedAt } = task;
+  arr.forEach(({ group, id, completedAt }) => {
+    if (group in groups) groups[group].tasks++;
+    else groups[group] = { name: group, tasks: 1, completed: 0 };
+    if (completedAt) groups[group].completed++;
+  });
 
-    if (group in obj) {
-      obj[group].tasks.push(task);
-      obj[group].map[task.id] = obj[task.group].tasks.length - 1;
-      if (completedAt) obj[group].completed++;
-
-    } else {
-      obj[group] = {};
-      obj[group].tasks = [task];
-      obj[group].map = {
-        [id]: 0
-      };
-      obj[group].completed = task.completedAt === null ? 0 : 1;
-    }
-  }
-
-  const groups = [];
-  for (let key in obj) {
-    const { tasks, completed, map } = obj[key];
-    groups.push({ name: key, tasks, completed, map });
-  }
-
-  return groups;
-
+  return [...Object.values(groups)];
 }
 
 export default formatData;
